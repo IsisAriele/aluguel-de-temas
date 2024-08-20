@@ -1,0 +1,109 @@
+<div class="grid">
+    <div class="col-12">
+      <div class="card px-6 py-6">
+        <p-toast></p-toast>
+        <p-toolbar styleClass="mb-4">
+          <ng-template pTemplate="left">
+            <div class="my-2">
+              <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+              <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedClientes()" [disabled]="!selectedClientes || !selectedClientes.length"></button>
+            </div>
+          </ng-template>
+  
+          <ng-template pTemplate="right">
+            <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+            <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+          </ng-template>
+        </p-toolbar>
+  
+        <p-table #dt [value]="clientes" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['nome','email']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [(selection)]="selectedClientes" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">Manage Clientes</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." class="w-full sm:w-auto"/>
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+              <th pSortableColumn="nome">Name <p-sortIcon field="nome"></p-sortIcon></th>
+              <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-cliente>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="cliente"></p-tableCheckbox>
+              </td>
+              <td>{{cliente.id}}</td>
+              <td>{{cliente.name}}</td>
+              <td>{{cliente.email}}</td>
+              <td>
+                <div class="flex">
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editCliente(cliente)"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteCliente(cliente)"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+  
+      <p-dialog [(visible)]="clienteDialog" [style]="{width: '450px'}" header="Cliente Details" [modal]="true" class="p-fluid">
+        <ng-template pTemplate="content">
+          <div class="field">
+            <label for="nome">Name</label>
+            <input type="text" pInputText id="nome" [(ngModel)]="cliente.nome" required />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="text" pInputText id="email" [(ngModel)]="cliente.email" required />
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-d-flex p-jc-end">
+            <button pButton type="button" label="Cancel" icon="pi pi-times" (click)="hideDialog()"></button>
+            <button pButton type="button" label="Save" icon="pi pi-check" class="p-button-success" (click)="saveCliente()"></button>
+          </div>
+        </ng-template>
+      </p-dialog>
+  
+      <p-dialog [(visible)]="deleteClienteDialog" [style]="{width: '350px'}" header="Confirm" modal="modal" [closable]="false">
+        <ng-template pTemplate="content">
+          <div class="confirmation-content">
+            <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem;"></i>
+            <span>Are you sure you want to delete <b>{{cliente.nome}}</b>?</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-d-flex p-jc-end">
+            <button pButton type="button" label="No" icon="pi pi-times" (click)="hideDialog()"></button>
+            <button pButton type="button" label="Yes" icon="pi pi-check" class="p-button-danger" (click)="confirmDelete()"></button>
+          </div>
+        </ng-template>
+      </p-dialog>
+  
+      <p-dialog [(visible)]="deleteClientesDialog" [style]="{width: '350px'}" header="Confirm" modal="modal" [closable]="false">
+        <ng-template pTemplate="content">
+          <div class="confirmation-content">
+            <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem;"></i>
+            <span>Are you sure you want to delete the selected clientes?</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-d-flex p-jc-end">
+            <button pButton type="button" label="No" icon="pi pi-times" (click)="deleteClientesDialog = false"></button>
+            <button pButton type="button" label="Yes" icon="pi pi-check" class="p-button-danger" (click)="confirmDeleteSelected()"></button>
+          </div>
+        </ng-template>
+      </p-dialog>
+    </div>
+  </div>
+  
