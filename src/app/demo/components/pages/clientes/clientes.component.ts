@@ -73,12 +73,14 @@ export class ClientesComponent implements OnInit {
 
   hideDialog() {
     this.clienteDialog = false;
+    this.deleteClienteDialog = false;
+    this.deleteClientesDialog = false;
     this.submitted = false;
   }
 
   saveCliente() {
     this.submitted = true;
-  
+
     if (this.cliente.name?.trim() && this.cliente.email?.trim()) {
       if (this.cliente.id) {
         this.clienteService.updateCliente(this.cliente).subscribe(() => {
@@ -87,7 +89,7 @@ export class ClientesComponent implements OnInit {
             this.clientes[index] = this.cliente;
           }
           this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente atualizado', life: 3000 });
-  
+
           this.clientes = [...this.clientes];
           this.clienteDialog = false;
           this.cliente = {};
@@ -96,7 +98,7 @@ export class ClientesComponent implements OnInit {
         this.clienteService.createCliente(this.cliente).subscribe((newCliente) => {
           this.clientes.push(newCliente);
           this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Cliente cadastrado', life: 3000 });
-  
+
           this.clientes = [...this.clientes];
           this.clienteDialog = false;
           this.cliente = {};
@@ -104,7 +106,7 @@ export class ClientesComponent implements OnInit {
       }
     }
   }
-  
+
 
   findIndexById(id: number): number {
     let index = -1;
