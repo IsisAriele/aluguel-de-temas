@@ -1,0 +1,133 @@
+<div class="grid">
+    <div class="col-12">
+      <div class="card px-6 py-6">
+        <p-toast></p-toast>
+        <p-toolbar styleClass="mb-4">
+          <ng-template pTemplate="left">
+            <div class="my-2">
+              <button pButton pRipple label="Novo" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+              <button pButton pRipple label="Excluir" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedAlugueis()" [disabled]="!selectedAlugueis || !selectedAlugueis.length"></button>
+            </div>
+          </ng-template>
+  
+          <ng-template pTemplate="right">
+            <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Importar" chooseLabel="Importar" class="mr-2 inline-block"></p-fileUpload>
+            <button pButton pRipple label="Exportar" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+          </ng-template>
+        </p-toolbar>
+  
+        <p-table #dt [value]="alugueis" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['date', 'start_hours', 'end_hours', 'client', 'theme', 'address']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" [(selection)]="selectedAlugueis" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">Gerenciar Aluguéis</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." class="w-full sm:w-auto"/>
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+              <th pSortableColumn="date">Data <p-sortIcon field="date"></p-sortIcon></th>
+              <th pSortableColumn="start_hours">Hora Início <p-sortIcon field="start_hours"></p-sortIcon></th>
+              <th pSortableColumn="end_hours">Hora Fim <p-sortIcon field="end_hours"></p-sortIcon></th>
+              <th pSortableColumn="client">Cliente <p-sortIcon field="client"></p-sortIcon></th>
+              <th pSortableColumn="theme">Tema <p-sortIcon field="theme"></p-sortIcon></th>
+              <th pSortableColumn="address">Endereço <p-sortIcon field="address"></p-sortIcon></th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-aluguel>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="aluguel"></p-tableCheckbox>
+              </td>
+              <td>{{aluguel.id}}</td>
+              <td>{{aluguel.date}}</td>
+              <td>{{aluguel.start_hours}}</td>
+              <td>{{aluguel.end_hours}}</td>
+              <td>{{aluguel.client}}</td>
+              <td>{{aluguel.theme}}</td>
+              <td>{{aluguel.address}}</td>
+              <td>
+                <div class="flex">
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editAluguel(aluguel)"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteAluguel(aluguel)"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+  
+      <p-dialog [(visible)]="aluguelDialog" [style]="{width: '450px'}" header="Cadastrar Aluguel" [modal]="true" class="p-fluid">
+        <ng-template pTemplate="content">
+          <div class="field">
+            <label for="date">Data</label>
+            <input type="text" pInputText id="date" [(ngModel)]="aluguel.date" required />
+          </div>
+          <div class="field">
+            <label for="start_hours">Hora Início</label>
+            <input type="text" pInputText id="start_hours" [(ngModel)]="aluguel.start_hours" required />
+          </div>
+          <div class="field">
+            <label for="end_hours">Hora Fim</label>
+            <input type="text" pInputText id="end_hours" [(ngModel)]="aluguel.end_hours" required />
+          </div>
+          <div class="field">
+            <label for="client">Cliente</label>
+            <input type="number" pInputText id="client" [(ngModel)]="aluguel.client" required />
+          </div>
+          <div class="field">
+            <label for="theme">Tema</label>
+            <input type="number" pInputText id="theme" [(ngModel)]="aluguel.theme" required />
+          </div>
+          <div class="field">
+            <label for="address">Endereço</label>
+            <input type="number" pInputText id="address" [(ngModel)]="aluguel.address" required />
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-d-flex p-jc-end">
+            <button pButton type="button" label="Cancelar" icon="pi pi-times" (click)="hideDialog()"></button>
+            <button pButton type="button" label="Salvar" icon="pi pi-check" class="p-button-success" (click)="saveAluguel()"></button>
+          </div>
+        </ng-template>
+      </p-dialog>
+  
+      <p-dialog [(visible)]="deleteAluguelDialog" [style]="{width: '350px'}" header="Confirmar" modal="modal" [closable]="false">
+        <ng-template pTemplate="content">
+          <div class="confirmation-content">
+            <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem;"></i>
+            <span>Tem certeza de que deseja excluir o aluguel <b>{{aluguel.id}}</b>?</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-d-flex p-jc-end">
+            <button pButton type="button" label="Não" icon="pi pi-times" (click)="hideDialog()"></button>
+            <button pButton type="button" label="Sim" icon="pi pi-check" class="p-button-danger" (click)="confirmDelete()"></button>
+          </div>
+        </ng-template>
+      </p-dialog>
+  
+      <p-dialog [(visible)]="deleteAlugueisDialog" [style]="{width: '350px'}" header="Confirmar" modal="modal" [closable]="false">
+        <ng-template pTemplate="content">
+          <div class="confirmation-content">
+            <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem;"></i>
+            <span>Tem certeza de que deseja excluir os aluguéis selecionados?</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-d-flex p-jc-end">
+            <button pButton type="button" label="Não" icon="pi pi-times" (click)="hideDialog()"></button>
+            <button pButton type="button" label="Sim" icon="pi pi-check" class="p-button-danger" (click)="confirmDeleteSelected()"></button>
+          </div>
+        </ng-template>
+      </p-dialog>
+    </div>
+  </div>
+  
