@@ -1,0 +1,123 @@
+<div class="grid">
+    <div class="col-12">
+      <div class="card px-6 py-6">
+        <p-toast></p-toast>
+        <p-toolbar styleClass="mb-4">
+          <ng-template pTemplate="left">
+            <div class="my-2">
+              <button pButton pRipple label="Novo" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+              <button pButton pRipple label="Excluir" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedTemas()" [disabled]="!selectedTemas || !selectedTemas.length"></button>
+            </div>
+          </ng-template>
+        </p-toolbar>
+
+        <p-table #dt [value]="temas" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['name','color']" [paginator]="true" [rowsPerPageOptions]="[10, 20, 30]" [showCurrentPageReport]="true" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" [(selection)]="selectedTemas" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">Gerenciar Temas</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." class="w-full sm:w-auto"/>
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+              <th pSortableColumn="name">Nome <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="color">Cor <p-sortIcon field="color"></p-sortIcon></th>
+              <th pSortableColumn="price">Preço <p-sortIcon field="price"></p-sortIcon></th>
+              <th>Ações</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-tema>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="tema"></p-tableCheckbox>
+              </td>
+              <td>{{tema.id}}</td>
+              <td>{{tema.name}}</td>
+              <td>{{tema.color}}</td>
+              <td>{{tema.price | currency:'BRL':'symbol':'1.2-2':'pt-BR'}}</td>
+              <td>
+                <div class="flex">
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editTema(tema)"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteTema(tema)"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <p-dialog [(visible)]="temaDialog" [style]="{width: '450px'}" header="Cadastrar Tema" [modal]="true" class="p-fluid">
+        <ng-template pTemplate="content">
+          <div class="field">
+            <label for="name">Nome</label>
+            <input type="text" pInputText id="name" [(ngModel)]="tema.name" required />
+          </div>
+          <div class="field">
+            <label for="color">Cor</label>
+            <input type="text" pInputText id="color" [(ngModel)]="tema.color" required />
+          </div>
+          <div class="field">
+            <label for="price">Preço</label>
+            <input type="number" pInputNumber id="price" [(ngModel)]="tema.price" required />
+          </div>
+          <div class="field">
+            <label for="itens">Itens Tema</label>
+            <p-multiSelect
+                [options]="items"
+                [(ngModel)]="selectedItems"
+                optionLabel="name"
+                placeholder="Selecione os itens"
+                display="chip"
+                [style]="{'width': '100%'}"
+                [panelStyle]="{'max-height': '200px', 'overflow-y': 'auto'}"
+                appendTo="body">
+            </p-multiSelect>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="p-d-flex p-jc-end">
+            <button pButton type="button" label="Cancelar" icon="pi pi-times" (click)="hideDialog()"></button>
+            <button pButton type="button" label="Salvar" icon="pi pi-check" class="p-button-success" (click)="saveTema()"></button>
+          </div>
+        </ng-template>
+      </p-dialog>
+
+
+      <p-dialog [(visible)]="deleteTemaDialog" [style]="{width: '350px'}" header="Confirmar" modal="modal" [closable]="false">
+        <ng-template pTemplate="content">
+            <div class="confirmation-content">
+                <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem;"></i>
+                <span>Tem certeza de que deseja excluir o tema <b>{{tema.name}}</b>?</span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <div class="p-d-flex p-jc-end">
+                <button pButton type="button" label="Não" icon="pi pi-times" (click)="hideDialog()"></button>
+                <button pButton type="button" label="Sim" icon="pi pi-check" class="p-button-danger" (click)="confirmDelete()"></button>
+            </div>
+        </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="deleteTemasDialog" [style]="{width: '350px'}" header="Confirmar" modal="modal" [closable]="false">
+        <ng-template pTemplate="content">
+            <div class="confirmation-content">
+                <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem;"></i>
+                <span>Tem certeza de que deseja excluir os temas selecionados?</span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <div class="p-d-flex p-jc-end">
+                <button pButton type="button" label="Não" icon="pi pi-times" (click)="hideDialog()"></button>
+                <button pButton type="button" label="Sim" icon="pi pi-check" class="p-button-danger" (click)="confirmDeleteSelected()"></button>
+            </div>
+        </ng-template>
+    </p-dialog>
+    </div>
+  </div>
