@@ -21,6 +21,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   maxRentCount: number = 0;
   themeColors: string[] = ['#FF5733', '#33FF57', '#3375FF', '#FFC300', '#DAF7A6', '#C70039', '#900C3F', '#581845'];
+  totalThemes: number = 0; // Variável para armazenar o total de temas cadastrados
 
   constructor(
     private aluguelService: AluguelService,
@@ -45,9 +46,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ]).subscribe(([alugueis, temas]) => {
       this.alugueis = alugueis;
       this.themes = temas;
-      console.log('Aluguéis:', this.alugueis);
-      console.log('Temas:', this.themes);
-      this.calculateTopThemes(); // Calcular temas mais alugados após carregar aluguéis e temas
+      this.totalThemes = temas.length; // Armazenar o total de temas cadastrados
+      this.calculateTopThemes();
     });
 
     // Obter produtos
