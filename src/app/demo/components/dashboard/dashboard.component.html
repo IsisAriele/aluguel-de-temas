@@ -1,59 +1,59 @@
 <div class="grid">
-    <!-- Card para exibir quantidade de clientes cadastrados -->
+    <!-- quantidade de clientes cadastrados -->
     <div class="col-12 lg:col-6 xl:col-3">
         <div class="card mb-0">
             <div class="flex justify-content-between mb-3">
                 <div>
                     <span class="block text-500 font-medium mb-3">Clientes Cadastrados</span>
-                    <div class="text-900 font-medium text-xl">{{ totalClients }}</div> <!-- Exibe o total de clientes -->
+                    <div class="text-900 font-medium text-xl">{{ totalClients }}</div>
                 </div>
                 <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-users text-blue-500 text-xl"></i> <!-- Ícone de usuários -->
+                    <i class="pi pi-users text-blue-500 text-xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Card para exibir quantidade de temas cadastrados -->
+    <!-- quantidade de temas cadastrados -->
     <div class="col-12 lg:col-6 xl:col-3">
         <div class="card mb-0">
             <div class="flex justify-content-between mb-3">
                 <div>
                     <span class="block text-500 font-medium mb-3">Temas Cadastrados</span>
-                    <div class="text-900 font-medium text-xl">{{ totalThemes }}</div> <!-- Exibe o total de temas -->
+                    <div class="text-900 font-medium text-xl">{{ totalThemes }}</div>
                 </div>
                 <div class="flex align-items-center justify-content-center bg-green-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-palette text-green-500 text-xl"></i> <!-- Ícone de paleta -->
+                    <i class="pi pi-palette text-green-500 text-xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Card para exibir quantidade de itens cadastrados -->
+    <!-- quantidade de itens cadastrados -->
     <div class="col-12 lg:col-6 xl:col-3">
         <div class="card mb-0">
             <div class="flex justify-content-between mb-3">
                 <div>
                     <span class="block text-500 font-medium mb-3">Itens Cadastrados</span>
-                    <div class="text-900 font-medium text-xl">{{ totalItens }}</div> <!-- Exibe o total de itens -->
+                    <div class="text-900 font-medium text-xl">{{ totalItens }}</div>
                 </div>
                 <div class="flex align-items-center justify-content-center bg-orange-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-box text-orange-500 text-xl"></i> <!-- Ícone de caixa -->
+                    <i class="pi pi-box text-orange-500 text-xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
-     <!-- Card para exibir quantidade de alugueis efetuados -->
+     <!-- quantidade de alugueis efetuados -->
      <div class="col-12 lg:col-6 xl:col-3">
         <div class="card mb-0">
             <div class="flex justify-content-between mb-3">
                 <div>
                     <span class="block text-500 font-medium mb-3">Aluguéis Efetuados</span>
-                    <div class="text-900 font-medium text-xl">{{ totalAlugueis }}</div> <!-- Exibe o total de aluguéis -->
+                    <div class="text-900 font-medium text-xl">{{ totalAlugueis }}</div>
                 </div>
                 <div class="flex align-items-center justify-content-center bg-purple-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-calendar text-purple-500 text-xl"></i> <!-- Ícone de calendário -->
+                    <i class="pi pi-calendar text-purple-500 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
             </p-table>
         </div>
 
-        <!-- Seção de Temas Mais Alugados -->
+        <!-- Temas Mais Alugados -->
         <div class="card">
             <div class="flex justify-content-between align-items-center mb-5">
                 <h5>Temas Mais Alugados</h5>
@@ -108,9 +108,10 @@
         </div>
 
         <div class="card">
-            <h5>Sales Overview</h5>
+            <h5>Quantidade de Temas Alugados no Período</h5>
             <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
         </div>
+
 
         <div class="col-12 xl:col-6">
             <div class="card">
