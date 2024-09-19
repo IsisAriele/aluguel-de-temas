@@ -6,6 +6,8 @@ import { AluguelService } from '../../service/aluguel.service';
 import { TemaService } from '../../service/tema.service';
 import { ProductService } from '../../service/product.service';
 import { Product } from '../../api/product';
+import { ClienteService } from '../../service/cliente.service';
+import { ItemService } from '../../service/item.service';
 
 @Component({
   templateUrl: './dashboard.component.html',
@@ -19,13 +21,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   themes: any[] = [];
   topThemes: any[] = [];
   products: Product[] = [];
+  totalThemes: number = 0;
+  totalClients: number = 0;
+  totalItens: number = 0;
+  totalAlugueis: number = 0;
   maxRentCount: number = 0;
   themeColors: string[] = ['#FF5733', '#33FF57', '#3375FF', '#FFC300', '#DAF7A6', '#C70039', '#900C3F', '#581845'];
-  totalThemes: number = 0; // Variável para armazenar o total de temas cadastrados
 
   constructor(
     private aluguelService: AluguelService,
     private temaService: TemaService,
+    private clienteService: ClienteService,
+    private itensService: ItemService,
     private productService: ProductService,
     public layoutService: LayoutService
   ) {
@@ -39,15 +46,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initChart();
 
-    // Carregar aluguéis e temas juntos
+    // Carregar aluguéis, temas, clientes e itens juntos
     forkJoin([
       this.aluguelService.getAlugueis(),
-      this.temaService.getTemas()
-    ]).subscribe(([alugueis, temas]) => {
+      this.temaService.getTemas(),
+      this.clienteService.getClientes(),
+      this.itensService.getItens()
+    ]).subscribe(([alugueis, temas, clientes, itens]) => {
       this.alugueis = alugueis;
       this.themes = temas;
-      this.totalThemes = temas.length; // Armazenar o total de temas cadastrados
-      this.calculateTopThemes();
+      this.totalAlugueis = alugueis.length;
+      this.totalThemes = temas.length;
+      this.totalClients = clientes.length;
+      this.totalItens = itens.length;
+      console.log('Aluguéis:', this.alugueis);
+      console.log('Temas:', this.themes);
+      console.log('Clientes:', this.totalClients);
+      console.log('Itens:', this.totalItens);
+      this.calculateTopThemes(); // Calcular temas mais alugados após carregar todos os dados
     });
 
     // Obter produtos
