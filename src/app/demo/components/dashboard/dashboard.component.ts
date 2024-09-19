@@ -19,6 +19,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   items!: MenuItem[];
   chartData: any;
   chartOptions: any;
+  revenueChartData: any; // Dados para o gráfico de receita
+  revenueChartOptions: any; // Opções para o gráfico de receita
   topUsers: any[] = [];
   subscription!: Subscription;
   alugueis: any[] = [];
@@ -49,15 +51,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initChart();
-    this.productService.getProductsSmall().then(data => this.products = data);
+    this.loadProducts();
     this.loadTopUsers();
+    this.loadData();
+    this.items = [
+      { label: 'Add New', icon: 'pi pi-fw pi-plus' },
+      { label: 'Remove', icon: 'pi pi-fw pi-minus' },
+    ];
+  }
 
+  loadData() {
     forkJoin([
       this.aluguelService.getAlugueis(),
       this.temaService.getTemas(),
       this.clienteService.getClientes(),
       this.itensService.getItens()
-      this.aluguelService.getTotalRevenue()
     ]).subscribe(([alugueis, temas, clientes, itens]) => {
       this.alugueis = alugueis;
       this.themes = temas;
@@ -65,17 +73,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.totalThemes = temas.length;
       this.totalClients = clientes.length;
       this.totalItens = itens.length;
-      this.aluguelService.getTotalRevenue().subscribe(revenue => {
-        this.totalRevenue = revenue;
-     });;
       this.calculateTopThemes();
       this.calculateRentDataPerMonth();
+      this.calculateRevenueDataByMonth(); // Atualiza a função para calcular receita
     });
+  }
 
-    this.items = [
-      { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-      { label: 'Remove', icon: 'pi pi-fw pi-minus' },
-    ];
+  loadProducts() {
+    this.productService.getProductsSmall().then(data => this.products = data);
   }
 
   calculateRentDataPerMonth() {
@@ -95,6 +100,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
           fill: false,
           backgroundColor: this.themeColors[2],
           borderColor: this.themeColors[2],
+          tension: .4
+        }
+      ]
+    };
+  }
+
+  calculateRevenueDataByMonth() {
+    const revenueDataByMonth = Array(12).fill(0);
+
+    this.alugueis.forEach((aluguel) => {
+      const rentMonth = moment(aluguel.date, 'YYYY-MM-DD').month();
+      const theme = this.themes.find(t => t.id === aluguel.theme);
+      const revenue = theme ? theme.price || 0 : 0;
+      revenueDataByMonth[rentMonth] += revenue;
+    });
+
+    this.revenueChartData = {
+      labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+      datasets: [
+        {
+          label: 'Receita por Mês',
+          data: revenueDataByMonth,
+          fill: false,
+          backgroundColor: this.themeColors[0],
+          borderColor: this.themeColors[0],
           tension: .4
         }
       ]
@@ -169,6 +199,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       },
     };
+
+    this.revenueChartOptions = this.chartOptions; 
   }
 
   ngOnDestroy() {
