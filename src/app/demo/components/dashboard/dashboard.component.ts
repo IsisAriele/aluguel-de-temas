@@ -15,6 +15,7 @@ import * as moment from 'moment';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  totalRevenue: number = 0;
   items!: MenuItem[];
   chartData: any;
   chartOptions: any;
@@ -56,6 +57,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.temaService.getTemas(),
       this.clienteService.getClientes(),
       this.itensService.getItens()
+      this.aluguelService.getTotalRevenue()
     ]).subscribe(([alugueis, temas, clientes, itens]) => {
       this.alugueis = alugueis;
       this.themes = temas;
@@ -63,6 +65,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.totalThemes = temas.length;
       this.totalClients = clientes.length;
       this.totalItens = itens.length;
+      this.aluguelService.getTotalRevenue().subscribe(revenue => {
+        this.totalRevenue = revenue;
+     });;
       this.calculateTopThemes();
       this.calculateRentDataPerMonth();
     });

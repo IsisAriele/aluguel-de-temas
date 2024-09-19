@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
-import { Aluguel } from '../api/aluguel'; 
 import { map, switchMap } from 'rxjs/operators';
+import { Aluguel } from '../api/aluguel';
+import { TemaService } from './tema.service';
+import { ClienteService } from './cliente.service';
+import { Tema } from '../api/tema';
+import { Cliente } from '../api/cliente';
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +16,9 @@ export class AluguelService {
     private apiUrl = 'http://3.128.249.166:8000/api/rents/'; 
     
 
-    constructor(private http: HttpClient) { }
+    constructor( private http: HttpClient,
+        private temaService: TemaService,
+        private clienteService: ClienteService) { }
 
     getAlugueis(): Observable<Aluguel[]> {
         return this.http.get<Aluguel[]>(this.apiUrl);
@@ -52,6 +58,38 @@ export class AluguelService {
 
     getAluguel(id: number): Observable<Aluguel> {
         return this.http.get<Aluguel>(`${this.apiUrl}${id}/`);
+    }
+
+    getAlugueisComDetalhes(): Observable<any[]> {
+        return this.getAlugueis().pipe(
+            map(alugueis => {
+                return alugueis.map(aluguel => ({
+                    ...aluguel,
+                    temaPrice: this.temaService.getTema(aluguel.theme).pipe(map(tema => tema.price)),
+                    clienteNome: this.clienteService.getCliente(aluguel.client).pipe(map(cliente => cliente.name)),
+                }));
+            })
+        );
+    }
+
+    getTotalRevenue(): Observable<number> {
+        return this.temaService.getTemas().pipe(
+            switchMap(temas => {
+                return this.getAlugueis().pipe(
+                    map(alugueis => {
+                        return alugueis.reduce((total, aluguel) => {
+                            const temaPrice = this.getTemaPrice(aluguel.theme, temas);
+                            return total + temaPrice;
+                        }, 0);
+                    })
+                );
+            })
+        );
+    }
+
+    getTemaPrice(themeId: number, temas: Tema[]): number {
+        const tema = temas.find(t => t.id === themeId);
+        return tema ? tema.price || 0 : 0;
     }
 
     createAluguel(aluguel: Aluguel): Observable<Aluguel> {
