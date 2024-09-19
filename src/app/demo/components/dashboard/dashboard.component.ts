@@ -12,6 +12,7 @@ import { Product } from '../../api/product';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  totalRevenue: number = 0;
   items!: MenuItem[];
   chartData: any;
   chartOptions: any;
@@ -46,11 +47,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Carregar aluguéis e temas juntos
     forkJoin([
       this.aluguelService.getAlugueis(),
-      this.temaService.getTemas()
+      this.temaService.getTemas(),
+      this.aluguelService.getTotalRevenue()
     ]).subscribe(([alugueis, temas]) => {
       this.alugueis = alugueis;
       this.themes = temas;
       this.totalThemes = temas.length; // Armazenar o total de temas cadastrados
+      this.aluguelService.getTotalRevenue().subscribe(revenue => {
+        this.totalRevenue = revenue;
+     });;
       this.calculateTopThemes();
     });
 
