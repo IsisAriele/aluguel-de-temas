@@ -111,5 +111,19 @@
             <h5>Sales Overview</h5>
             <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
         </div>
+
+        <div class="col-12 xl:col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Top Usuários que Alugaram Temas</h5>
+                </div>
+                <div class="card-body">
+                    <div *ngFor="let user of topUsers" class="user-item">
+                        <strong>{{ user.clientName }}</strong>: Alugou <span>{{ user.rentCount }}</span> vez(es)
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

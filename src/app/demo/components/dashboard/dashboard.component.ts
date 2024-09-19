@@ -11,9 +11,11 @@ import { Product } from '../../api/product';
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+
   items!: MenuItem[];
   chartData: any;
   chartOptions: any;
+  topUsers: any[] = [];
   subscription!: Subscription;
   alugueis: any[] = [];
   themes: any[] = [];
@@ -38,6 +40,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initChart();
+    this.productService.getProductsSmall().then(data => this.products = data);
+    this.loadTopUsers(); // Chamada para carregar os top usuários
 
     // Carregar aluguéis e temas juntos
     forkJoin([
@@ -73,7 +77,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         themeRentCount[themeId] = 1;
       }
     });
-
+    
+   loadTopUsers() {
+        this.aluguelService.getTopUsers().subscribe(users => {
+            this.topUsers = users;
+        });
+    }
     // Encontre a quantidade máxima de aluguéis para normalizar a largura das barras
     this.maxRentCount = Math.max(...Object.values(themeRentCount));
 
