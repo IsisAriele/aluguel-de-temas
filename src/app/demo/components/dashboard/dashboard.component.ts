@@ -77,12 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         themeRentCount[themeId] = 1;
       }
     });
-    
-   loadTopUsers() {
-        this.aluguelService.getTopUsers().subscribe(users => {
-            this.topUsers = users;
-        });
-    }
+
     // Encontre a quantidade máxima de aluguéis para normalizar a largura das barras
     this.maxRentCount = Math.max(...Object.values(themeRentCount));
 
@@ -99,6 +94,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .sort((a, b) => b.count - a.count); // Ordenar por quantidade de aluguéis
 
     console.log('Temas mais alugados:', this.topThemes); // Verificar resultado final
+  }
+
+  loadTopUsers() {
+    this.aluguelService.getTopUsers().subscribe(users => {
+      this.topUsers = users;
+    });
   }
 
   initChart() {
