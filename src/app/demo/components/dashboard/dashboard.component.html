@@ -112,23 +112,29 @@
             </p-table>
         </div>
 
-        <div class="col-12 xl:col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Receita Total de Aluguéis</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Total:</strong> R$ {{ totalRevenue.toFixed(2) }}</p>
-                </div>
-            </div>
-        </div>
+    </div>
 
+    <div class="col-12 lg:col-6 xl:col-6">
         <!-- Gráfico de Receita Mensal -->
         <div class="card">
             <h5>Receita Mensal</h5>
             <p-chart type="line" [data]="revenueChartData" [options]="revenueChartOptions"></p-chart>
         </div>
-  
-  
     </div>
+
+    <div class="col-12 lg:col-6 xl:col-6">
+        <!-- Receita Total de Aluguéis -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Receita Total de Aluguéis</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Total:</strong> R$ {{ totalRevenue.toFixed(2) }}</p>
+            </div>
+        </div>
+    </div>
+
+
+
+
 </div>
