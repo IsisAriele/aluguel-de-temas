@@ -65,7 +65,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.aluguelService.getAlugueis(),
       this.temaService.getTemas(),
       this.clienteService.getClientes(),
-      this.itensService.getItens()
+      this.itensService.getItens(),
+      this.temaService.getTemas(),
+      this.aluguelService.getTotalRevenue()
     ]).subscribe(([alugueis, temas, clientes, itens]) => {
       this.alugueis = alugueis;
       this.themes = temas;
@@ -76,6 +78,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.calculateTopThemes();
       this.calculateRentDataPerMonth();
       this.calculateRevenueDataByMonth(); // Atualiza a função para calcular receita
+      this.aluguelService.getTotalRevenue().subscribe(revenue => {
+        this.totalRevenue = revenue;
+      });;
     });
   }
 
