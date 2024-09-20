@@ -1,3 +1,4 @@
+// aluguel.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
@@ -14,20 +15,24 @@ import { Cliente } from '../api/cliente';
 export class AluguelService {
 
     private apiUrl = 'http://3.128.249.166:8000/api/rents/'; 
-    
 
-    constructor( private http: HttpClient,
+    constructor(
+        private http: HttpClient,
         private temaService: TemaService,
-        private clienteService: ClienteService) { }
+        private clienteService: ClienteService
+    ) { }
 
+    // Obtém todos os aluguéis
     getAlugueis(): Observable<Aluguel[]> {
         return this.http.get<Aluguel[]>(this.apiUrl);
     }
 
+    // Obtém detalhes de um cliente específico
     getClientDetails(clientId: number): Observable<any> {
         return this.http.get<any>(`http://3.128.249.166:8000/api/clients/${clientId}/`);
     }
 
+    // Obtém os usuários com mais aluguéis
     getTopUsers(): Observable<any[]> {
         return this.getAlugueis().pipe(
             map(alugueis => {
@@ -56,22 +61,33 @@ export class AluguelService {
         );
     }
 
+    // Obtém um aluguel específico pelo ID
     getAluguel(id: number): Observable<Aluguel> {
         return this.http.get<Aluguel>(`${this.apiUrl}${id}/`);
     }
 
+    // Obtém aluguéis com detalhes de cliente e tema
     getAlugueisComDetalhes(): Observable<any[]> {
         return this.getAlugueis().pipe(
-            map(alugueis => {
-                return alugueis.map(aluguel => ({
-                    ...aluguel,
-                    temaPrice: this.temaService.getTema(aluguel.theme).pipe(map(tema => tema.price)),
-                    clienteNome: this.clienteService.getCliente(aluguel.client).pipe(map(cliente => cliente.name)),
-                }));
+            switchMap(alugueis => {
+                return forkJoin(alugueis.map(aluguel => 
+                    forkJoin({
+                        tema: this.temaService.getTema(aluguel.theme),
+                        cliente: this.clienteService.getCliente(aluguel.client)
+                    }).pipe(
+                        map(({ tema, cliente }) => ({
+                            ...aluguel,
+                            themeName: tema.name,  // Corrigido de 'temaName' para 'themeName'
+                            clientName: cliente.name,
+                            // Opcional: adicionar outros detalhes se necessário
+                        }))
+                    )
+                ));
             })
         );
     }
 
+    // Obtém a receita total
     getTotalRevenue(): Observable<number> {
         return this.temaService.getTemas().pipe(
             switchMap(temas => {
@@ -87,19 +103,23 @@ export class AluguelService {
         );
     }
 
+    // Obtém o preço de um tema específico
     getTemaPrice(themeId: number, temas: Tema[]): number {
         const tema = temas.find(t => t.id === themeId);
         return tema ? tema.price || 0 : 0;
     }
 
+    // Cria um novo aluguel
     createAluguel(aluguel: Aluguel): Observable<Aluguel> {
         return this.http.post<Aluguel>(this.apiUrl, aluguel);
     }
 
+    // Atualiza um aluguel existente
     updateAluguel(aluguel: Aluguel): Observable<Aluguel> {
         return this.http.put<Aluguel>(`${this.apiUrl}${aluguel.id}/`, aluguel);
     }
 
+    // Deleta um aluguel pelo ID
     deleteAluguel(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}${id}/`);
     }
